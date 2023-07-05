@@ -1,14 +1,19 @@
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
-import routes from './routes';
+import routes from './routes.js';
+import dotenv from 'dotenv';
 
 const app = express();
+// env
+dotenv.config();
+const port = process.env.PORT || 3000;
+export const key = process.env.KEY;
 
 // session 설정
 app.use(
   session({
-    secret: 'your-secret-key',
+    secret: key,
     resave: false,
     saveUninitialized: false,
   })
@@ -29,7 +34,6 @@ app.use(express.urlencoded({ extended: true }));
 // 라우터 연결
 app.use('/', routes);
 
-const port = 5500;
 // 서버 시작
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);

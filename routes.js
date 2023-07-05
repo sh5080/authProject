@@ -1,5 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { key } from './index.js';
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ router.get('/logout', (req, res) => {
 // 토큰 생성 함수
 function generateToken(username) {
   // 토큰 생성
-  const token = jwt.sign({ username }, 'your-secret-key', { expiresIn: '1h' });
+  const token = jwt.sign({ username }, key, { expiresIn: '1h' });
   return token;
 }
 
