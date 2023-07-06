@@ -82,8 +82,7 @@
             const form = event.target;
             const formData = new FormData(form);
 
-            // axios.post('http://localhost:5500/session_login', formData)
-            axios.post('http://127.0.0.1:5500/session_login', formData)
+            axios.post('http://127.0.0.1:5000/session_login', formData)
                 .then(function (response) {
                     console.log(response.data);
                     // 로그인 성공 처리
