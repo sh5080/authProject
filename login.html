@@ -59,11 +59,12 @@
 <body>
     <div class="login-container">
         <h2 class="login-title">세션 로그인</h2>
-        <form id="loginForm" action="/session_login" method="post">
+        <form id="loginForm1" action="/session_login" method="post">
             <input type="text" name="username" placeholder="아이디" class="in">
             <input type="password" name="password" placeholder="비밀번호" class="in">
             <input type="submit" id="btn1" value="로그인"><br>
         </form>
+        <div id="loginMessage1"></div>
     </div>
 
     <div class="login-container">
@@ -73,23 +74,61 @@
             <input type="password" name="password" placeholder="비밀번호" class="in">
             <input type="submit" id="btn2" value="로그인"><br>
         </form>
+        <div id="loginMessage2"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
+        document.getElementById("loginForm1").addEventListener("submit", function (event) {
             event.preventDefault(); // 폼 기본 동작 중단
             const form = event.target;
-            const formData = new FormData(form);
+            const formData = new FormData(event.target);
 
-            axios.post('http://127.0.0.1:5000/session_login', formData)
+            axios.post('http://127.0.0.1:4000/session_login', formData,{
+                headers: {
+    'Content-Type': 'application/json'
+  }
+            })
                 .then(function (response) {
                     console.log(response.data);
                     // 로그인 성공 처리
+                    const loginMessage = document.getElementById('loginMessage1');
+                    loginMessage.textContent = response.data;
                 })
                 .catch(function (error) {
                     console.error(error);
                     // 로그인 실패 처리
+                    const loginMessage = document.getElementById('loginMessage1');
+                    loginMessage.textContent = error.response.data;
+                });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById("loginForm2").addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 기본 동작 중단
+            const form = event.target;
+            const formData = new FormData(form);
+    
+            axios.post('http://127.0.0.1:4000/token_login', formData, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function (response) {
+                    console.log(response.data);
+                    // 로그인 성공 처리
+                    const loginMessage = document.getElementById('loginMessage2');
+                    loginMessage.textContent = response.data.message;
+    
+                    // 토큰 저장 및 활용
+                    const token = response.data.token;
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    // 로그인 실패 처리
+                    const loginMessage = document.getElementById('loginMessage2');
+                    loginMessage.textContent = error.response.data;
                 });
         });
     </script>

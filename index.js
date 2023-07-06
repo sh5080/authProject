@@ -22,7 +22,7 @@ app.use(
 // 미들웨어 및 라우터 설정
 app.use(
   cors({
-    origin: 'http://127.0.0.1:5500',
+    origin: 'http://127.0.0.1:60783',
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
   })

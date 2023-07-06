@@ -15,9 +15,9 @@ router.post('/session_login', (req, res) => {
   if (username === 'admin' && password === 'password') {
     req.session.authenticated = true; // 세션에 인증 정보 저장
     req.session.user = { username }; // 세션에 사용자 정보 저장
-    res.send('로그인 성공');
+    res.send('세션 로그인 성공');
   } else {
-    res.status(401).send('로그인 실패');
+    res.status(401).send('세션 로그인 실패');
   }
 });
 
@@ -31,7 +31,7 @@ router.post('/token_login', (req, res) => {
   if (username === 'admin' && password === 'password') {
     // 토큰 생성 및 반환
     const token = generateToken(username);
-    res.send({ token });
+    res.send({ message: "토큰 로그인 성공",token });
   } else {
     // 인증 실패 처리
     res.status(401).send('토큰 로그인 실패');
