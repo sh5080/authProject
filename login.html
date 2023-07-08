@@ -8,145 +8,203 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
 
         * {
-        font-family: 'Noto Sans KR', sans-serif;
-    }
+            font-family: 'Noto Sans KR', sans-serif;
+        }
 
-    body {
-        background-color: #1BBC9B;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
+        body {
+            background-color: #1BBC9B;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-    .login-container {
-      width: 300px;
-      background-color: #EEEFF1;
-      border-radius: 5px;
-      text-align: center;
-      padding: 50px;
-      margin-bottom: 200px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      height: 250px;
-    }
+        .login-container {
+            width: 300px;
+            background-color: #EEEFF1;
+            border-radius: 5px;
+            text-align: center;
+            padding: 50px;
+            margin-bottom: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 250px;
+        }
 
+        .login-container input {
+            width: 90%;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: none;
+        }
 
-    .login-container input {
-        width: 90%;
-        padding: 15px;
-        box-sizing: border-box;
-        border-radius: 5px;
-        border: none;
-        
-    }
+        .login-container .in {
+            margin-bottom: 10px;
+        }
 
-    .login-container .in {
-        margin-bottom: 10px;
-    }
+        .login-container .login-button {
+            background-color: #1BBC9B;
+            margin-bottom: 15px;
+            color: white;
+        }
 
-    .login-container #btn1 {
-        background-color: #1BBC9B;
-        margin-bottom: 15px;
-        color: white;
-    }
-    .login-container #btn2 {
-        background-color: #1BBC9B;
-        margin-bottom: 15px;
-        color: white;
-    }
+        .login-container a {
+            text-decoration: none;
+            color: #9B9B9B;
+            font-size: 12px;
+        }
 
-    .login-container a {
-        text-decoration: none;
-        color: #9B9B9B;
-        font-size: 12px;
-    }    
-
-    .login-container + .login-container {
-      margin-left: 30px;
-    }
-</style>
+        .login-container + .login-container {
+            margin-left: 30px;
+        }
+    </style>
 
 </head>
 
 <body>
     <div class="login-container">
         <h2 class="login-title">세션 로그인</h2>
-        <form id="loginForm1" action="/session_login" method="post">
+        <form id="session" action="/session" method="post">
             <input type="text" name="username" placeholder="아이디" class="in">
             <input type="password" name="password" placeholder="비밀번호" class="in">
-            <input type="submit" id="btn1" value="로그인"><br>
+            <input type="submit" id="sessionLoginButton" class="login-button" value="로그인"><br>
         </form>
-        <div id="loginMessage1"></div>
+        <div class="message-container">
+        <!-- <div id="sessionLoginMessage"></div> -->
+        <button id="checkSessionButton">세션 검증</button>
+    </div>
     </div>
 
     <div class="login-container">
         <h2 class="login-title">토큰 로그인</h2>
-        <form id="loginForm2" action="/token_login" method="post">
+        <form id="token" action="/token" method="post">
             <input type="text" name="username" placeholder="아이디" class="in">
             <input type="password" name="password" placeholder="비밀번호" class="in">
-            <input type="submit" id="btn2" value="로그인"><br>
+            <input type="submit" id="tokenLoginButton" class="login-button" value="로그인"><br>
         </form>
-        <div id="loginMessage2"></div>
+        <div id="tokenLoginMessage"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
-        document.getElementById("loginForm1").addEventListener("submit", function (event) {
-            event.preventDefault(); // 폼 기본 동작 중단
-            const form = event.target;
-            const formData = new FormData(event.target);
 
-            axios.post('http://127.0.0.1:4000/session_login', formData,{
-                headers: {
-    'Content-Type': 'application/json'
-  }
-            })
-                .then(function (response) {
-                    console.log(response.data);
-                    // 로그인 성공 처리
-                    const loginMessage = document.getElementById('loginMessage1');
-                    loginMessage.textContent = response.data;
-                })
-                .catch(function (error) {
-                    console.error(error);
-                    // 로그인 실패 처리
-                    const loginMessage = document.getElementById('loginMessage1');
-                    loginMessage.textContent = error.response.data;
-                });
-        });
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        document.getElementById("loginForm2").addEventListener("submit", function (event) {
+        function createLogoutButton(containerId) {
+            const container = document.getElementById(containerId);
+            let logoutButton = container.querySelector(`#${containerId} .login-button`);
+            if (!logoutButton) {
+                logoutButton = document.createElement('input');
+                logoutButton.type = 'button';
+                logoutButton.value = '로그아웃';
+                logoutButton.classList.add('login-button');
+                container.appendChild(logoutButton);
+            }
+            logoutButton.addEventListener('click', function (event) {
+                event.preventDefault(); // 버튼 클릭 시 기본 동작 중단
+
+                axios
+                    .get(`http://127.0.0.1:4000/${containerId}/logout`)
+                    .then(function (response) {
+                        console.log(response.data);
+                        // 로그아웃 성공 처리
+                        const loginButton = document.getElementById(`${containerId}Button`);
+                        // loginButton.value = '로그인';
+                        window.location.href = '/login.html'; // 로그아웃 후 홈페이지로 리다이렉트
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        // 로그아웃 실패 처리
+                    })
+                    .finally(function () {
+                        logoutButton.remove(); // 로그아웃 버튼 제거
+                    });
+            });
+
+            container.appendChild(logoutButton);
+        }
+
+        document.getElementById("session").addEventListener("submit", function (event) {
             event.preventDefault(); // 폼 기본 동작 중단
             const form = event.target;
             const formData = new FormData(form);
-    
-            axios.post('http://127.0.0.1:4000/token_login', formData, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+
+            axios.post('http://127.0.0.1:4000/session/login', {
+                    username: formData.get('username'),
+                    password: formData.get('password')
                 })
                 .then(function (response) {
                     console.log(response.data);
                     // 로그인 성공 처리
-                    const loginMessage = document.getElementById('loginMessage2');
-                    loginMessage.textContent = response.data.message;
-    
-                    // 토큰 저장 및 활용
-                    const token = response.data.token;
+                    // const loginMessage = document.getElementById('sessionLoginMessage');
+                    // loginMessage.textContent = response.data;
+                    const loginButton = document.getElementById('sessionLoginButton');
+                    loginButton.value = '로그아웃';
+                    const checkSessionButton = document.getElementById('checkSessionButton');
+          checkSessionButton.style.display = 'block';
+
+                    createLogoutButton('session');
                 })
                 .catch(function (error) {
                     console.error(error);
                     // 로그인 실패 처리
-                    const loginMessage = document.getElementById('loginMessage2');
+                    const loginMessage = document.getElementById('sessionLoginMessage');
                     loginMessage.textContent = error.response.data;
                 });
         });
+
+        document.getElementById("token").addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 기본 동작 중단
+            const form = event.target;
+            const formData = new FormData(form);
+
+            axios.post('http://127.0.0.1:4000/token/login', {
+                    username: formData.get('username'),
+                    password: formData.get('password')
+                })
+                .then(function (response) {
+                    console.log(response.data);
+                    // 로그인 성공 처리
+                    const loginMessage = document.getElementById('tokenLoginMessage');
+                    loginMessage.textContent = response.data.message;
+
+                    // 토큰 저장 및 활용
+                    const token = response.data.token;
+
+                    const loginButton = document.getElementById('tokenLoginButton');
+                    loginButton.value = '로그아웃';
+
+                    createLogoutButton('token');
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    // 로그인 실패 처리
+                    const loginMessage = document.getElementById('tokenLoginMessage');
+                    loginMessage.textContent = error.response.data;
+
+                });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const checkSessionButton = document.getElementById('checkSessionButton');
+      checkSessionButton.addEventListener('click', function() {
+        axios.get('http://127.0.0.1/4000/session/check')
+          .then(function(response) {
+            const loggedIn = response.data.loggedIn;
+            if (loggedIn) {
+              alert(response.data);
+            } else {
+              alert('세션에 로그인되어 있지 않습니다.');
+            }
+          })
+          .catch(function(error) {
+            console.error(error);
+          });
+      });
     </script>
 </body>
 
