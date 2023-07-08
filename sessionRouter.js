@@ -8,18 +8,26 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   console.log(username);
   console.log(password);
+
   try {
     // 사용자 인증 성공
     const authenticated = await authenticateUser(username, password);
+
     if (authenticated) {
-      req.session.authenticateUser = true; // 세션에 인증 정보 저장
-      req.session.user = { username }; // 세션에 사용자 정보 저장
       const now = new Date();
       const expires = new Date(now.getTime() + 86400000).toISOString().slice(0, 22).replace('T', ' ');
-      console.log('expires: ', expires);
-      req.session.expires = expires;
 
-      console.log('session: ', req.session);
+      req.session.data = {
+        authenticateUser: true,
+        user: { username },
+        expires: expires,
+      };
+      req.session.save((err) => {
+        if (err) {
+          console.error('세션 저장 오류:', err);
+        }
+      });
+      console.log('로그인했을 때: ', req.session);
       res.send('세션 로그인 성공');
     } else throw error;
   } catch (error) {
@@ -36,12 +44,14 @@ router.get('/logout', (req, res) => {
 
 // 세션 검증 API
 router.get('/check', (req, res) => {
-  if (req.session.loggedIn) {
-    // 세션이 존재하고 로그인된 상태일 때
-    res.send({ loggedIn: true, message: '세션검증성공' });
-  } else {
-    // 세션이 존재하지 않거나 로그인되지 않은 상태일 때
-    res.send({ loggedIn: false });
+  try {
+    if (req.sessionID) {
+      // 세션이 존재하고 로그인된 상태일 때
+      res.send('세션검증성공');
+    }
+  } catch (error) {
+    res.send('검증 실패');
+    console.error(error);
   }
 });
 

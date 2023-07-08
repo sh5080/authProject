@@ -192,12 +192,13 @@
     <script>
       const checkSessionButton = document.getElementById('checkSessionButton');
       checkSessionButton.addEventListener('click', function() {
-        axios.get('http://127.0.0.1/4000/session/check')
+        axios.get('http://127.0.0.1:4000/session/check', { withCredentials: true })
           .then(function(response) {
-            const loggedIn = response.data.loggedIn;
+            const loggedIn = response.data;
             if (loggedIn) {
               alert(response.data);
-            } else {
+            } 
+            else {
               alert('세션에 로그인되어 있지 않습니다.');
             }
           })

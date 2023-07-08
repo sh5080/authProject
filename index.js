@@ -6,6 +6,7 @@ import tokenRoutes from './tokenRouter.js';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import MySQLStore from 'express-mysql-session';
+
 const app = express();
 // env
 dotenv.config();
@@ -23,7 +24,6 @@ export const dbLoader = async () => {
     db = await mysql.createPool({
       host: DB_HOST,
       user: DB_USER,
-      // port: DB_PORT,
       password: DB_PASSWORD,
       database: DB_NAME,
       waitForConnections: true,
@@ -56,7 +56,6 @@ async function startServer() {
       password: DB_PASSWORD,
       database: DB_NAME,
     });
-
     app.use(
       session({
         secret: key,
@@ -74,6 +73,7 @@ async function startServer() {
         },
       })
     );
+
     // 미들웨어 및 라우터 설정
 
     app.use(express.json());
@@ -87,6 +87,7 @@ async function startServer() {
     );
 
     // 라우터 연결
+
     app.use('/session', sessionRoutes);
     app.use('/token', tokenRoutes);
     app.set(db);
