@@ -6,6 +6,7 @@ import tokenRoutes from './tokenRouter.js';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import MySQLStore from 'express-mysql-session';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 // env
@@ -41,6 +42,7 @@ async function startServer() {
     await dbLoader();
 
     // session 설정
+    app.use(cookieParser());
     const sessionStore = new MySQLStore({
       createDatabaseTable: true,
       schema: {
@@ -70,6 +72,7 @@ async function startServer() {
           // 쿠키의 최대 수명을 설정합니다.
           // 예: 24시간 (초 단위)
           maxAge: 24 * 60 * 60,
+          httpOnly: true,
         },
       })
     );
@@ -80,7 +83,7 @@ async function startServer() {
     app.use(express.urlencoded({ extended: true }));
     app.use(
       cors({
-        origin: 'http://127.0.0.1:55597',
+        origin: 'http://127.0.0.1:5500',
         methods: ['GET', 'POST', 'OPTIONS'],
         credentials: true,
       })
