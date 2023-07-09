@@ -15,14 +15,17 @@ router.post('/login', async (req, res) => {
 
     if (authenticated) {
       const now = new Date();
-      const expires = new Date(now.getTime() + 86400000).toISOString().slice(0, 22).replace('T', ' ');
+      const koreanTime = 9 * 60 * 60 * 1000;
+      const koreanNow = new Date(now.getTime() + koreanTime);
+      const expires = new Date(koreanNow.getTime() + 24 * 60 * 60 * 1000);
+
       req.session.data = {
         authenticateUser: true,
         user: { username },
-        expires: expires,
+        createdAt: koreanNow.toISOString().slice(0, 19).replace('T', ' '),
+        expires: expires.toISOString().slice(0, 19).replace('T', ' '),
       };
-
-      res.cookie('sessionID', req.sessionID, { httpOnly: true });
+      res.cookie('sessionID', req.sessionID, { expires: expires, httpOnly: true });
       res.send('세션 로그인 성공');
     } else throw error;
   } catch (error) {
@@ -33,17 +36,22 @@ router.post('/login', async (req, res) => {
 
 // 로그아웃
 router.get('/logout', (req, res) => {
+  console.log('1: ', req.session);
   req.session.destroy(); // 세션 제거
+  res.clearCookie('sessionID'); // 쿠키 제거
+  console.log('2: ', req.session);
   res.send('세션 로그아웃 성공');
 });
 
 // 세션 검증 API
 router.get('/check', (req, res) => {
-  console.log('세션검증시', req.cookies);
+  console.log('세션검증시 쿠키:', req.cookies);
+  console.log('3:', req.session);
+  const result = res.sessionID;
   try {
     if (req.sessionID) {
-      // 세션이 존재하고 로그인된 상태일 때
-      res.send('세션검증성공');
+      // 세션이 존재
+      res.send(req.sessionID);
     }
   } catch (error) {
     res.send('검증 실패');
