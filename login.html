@@ -65,8 +65,8 @@
             font-size: 12px;
         }
 
-        .yellow-container {
-            background-color: yellow;
+        .big-container {
+            background-color: #ddd;
             padding: 20px;
             border-radius: 5px;
             display: flex;
@@ -76,12 +76,15 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            position:static;
+            bottom: 10px;
         }
 
         th, td {
             padding: 8px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border: 3px solid #ddd;
+            background-color: #f2f2f2;
         }
 
         th {
@@ -94,7 +97,7 @@
 
 <body>
     <div class="container">
-        <div class="yellow-container">
+        <div class="big-container">
             <div class="login-container">
                 <h2 class="login-title">세션 로그인</h2>
                 <form id="session" action="/session" method="post">
@@ -103,7 +106,7 @@
                     <input type="submit" id="sessionLoginButton" class="login-button" value="로그인">
                 </form>
                 <div class="message-container">
-                    <!-- <div id="sessionLoginMessage"></div> -->
+                    <div id="sessionLoginMessage"></div>
                     <button id="checkSessionButton">세션 검증</button>
                 </div>
             </div>
@@ -115,19 +118,29 @@
                     <input type="submit" id="tokenLoginButton" class="login-button" value="로그인">
                 </form>
             </div>
-        </div>
-    </div>
+            
 
-    <div class="container">
-        <div class="data-container">
-            <h2>세션 데이터</h2>
             <table id="sessionDataTable">
+                
                 <tr>
                     <th>Session ID</th>
                     <th>Data</th>
                     <th>Expires</th>
                 </tr>
             </table>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="data-container">
+            <!-- <h2>세션 데이터</h2>
+            <table id="sessionDataTable">
+                <tr>
+                    <th>Session ID</th>
+                    <th>Data</th>
+                    <th>Expires</th>
+                </tr>
+            </table> -->
         </div>
     </div>
 </body>
@@ -152,13 +165,16 @@
                 event.preventDefault(); // 버튼 클릭 시 기본 동작 중단
 
                 axios
-                    .get(`http://127.0.0.1:4000/${containerId}/logout`)
+                    .get(`http://localhost:4000/${containerId}/logout`)
                     .then(function (response) {
+                        // console.log('1: ',document.cookie)
+                        // // document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                        // console.log('2: ',document.cookie)
                         console.log(response.data);
                         // 로그아웃 성공 처리
                         const loginButton = document.getElementById(`${containerId}Button`);
                         // loginButton.value = '로그인';
-                        window.location.href = '/login.html'; // 로그아웃 후 홈페이지로 리다이렉트
+                        // window.location.href = '/login.html'; // 로그아웃 후 홈페이지로 리다이렉트
                     })
                     .catch(function (error) {
                         console.error(error);
@@ -177,20 +193,19 @@
             const form = event.target;
             const formData = new FormData(form);
 
-            axios.post('http://127.0.0.1:4000/session/login',{
+            axios.post('http://localhost:4000/session/login',{
                     username: formData.get('username'),
                     password: formData.get('password')
                 },{ withCredentials: true })
                 .then(function (response) {
                     console.log(response.data);
+                    console.log('@: ',response.headers['set-cookie'])
                     // 로그인 성공 처리
-                    // const loginMessage = document.getElementById('sessionLoginMessage');
-                    // loginMessage.textContent = response.data;
+                    const loginMessage = document.getElementById('sessionLoginMessage');
+                    loginMessage.textContent = response.data;
                     const loginButton = document.getElementById('sessionLoginButton');
                     loginButton.value = '로그아웃';
                     const checkSessionButton = document.getElementById('checkSessionButton');
-          checkSessionButton.style.display = 'block';
-
                     createLogoutButton('session');
                 })
                 .catch(function (error) {
@@ -206,7 +221,7 @@
             const form = event.target;
             const formData = new FormData(form);
 
-            axios.post('http://127.0.0.1:4000/token/login', {
+            axios.post('http://localhost:4000/token/login', {
                     username: formData.get('username'),
                     password: formData.get('password')
                 })
@@ -235,14 +250,15 @@
 
       const checkSessionButton = document.getElementById('checkSessionButton');
       checkSessionButton.addEventListener('click', function() {
-        axios.get('http://127.0.0.1:4000/session/check', { withCredentials: true })
+        axios.get('http://localhost:4000/session/check', { withCredentials: true })
           .then(function(response) {
-            const loggedIn = response.data;
+            const loggedIn = response;
+            console.log('logged',loggedIn)
             if (loggedIn) {
               alert(response.data);
             } 
             else {
-              alert('세션에 로그인되어 있지 않습니다.');
+              alert('로그인이 필요합니다.');
             }
           })
           .catch(function(error) {
@@ -250,7 +266,7 @@
           });
       });
          // 세션 데이터 가져와서 테이블에 추가하기
-         axios.get('http://127.0.0.1:4000/session/data')
+         axios.get('http://localhost:4000/session/data', { withCredentials: true })
             .then(function(response) {
                 const sessions = response.data;
                 const table = document.getElementById('sessionDataTable');
