@@ -19,6 +19,13 @@
             height: 100vh;
             margin: 0;
         }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
 
         .login-container {
             width: 300px;
@@ -26,12 +33,12 @@
             border-radius: 5px;
             text-align: center;
             padding: 50px;
-            margin-bottom: 200px;
+            margin-bottom: 50px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            height: 250px;
+            height: fit-content;
         }
 
         .login-container input {
@@ -58,36 +65,75 @@
             font-size: 12px;
         }
 
-        .login-container + .login-container {
-            margin-left: 30px;
+        .yellow-container {
+            background-color: yellow;
+            padding: 20px;
+            border-radius: 5px;
+            display: flex;
+            gap: 30px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
     </style>
 
 </head>
 
 <body>
-    <div class="login-container">
-        <h2 class="login-title">세션 로그인</h2>
-        <form id="session" action="/session" method="post">
-            <input type="text" name="username" placeholder="아이디" class="in">
-            <input type="password" name="password" placeholder="비밀번호" class="in">
-            <input type="submit" id="sessionLoginButton" class="login-button" value="로그인"><br>
-        </form>
-        <div class="message-container">
-        <!-- <div id="sessionLoginMessage"></div> -->
-        <button id="checkSessionButton">세션 검증</button>
-    </div>
+    <div class="container">
+        <div class="yellow-container">
+            <div class="login-container">
+                <h2 class="login-title">세션 로그인</h2>
+                <form id="session" action="/session" method="post">
+                    <input type="text" name="username" placeholder="아이디" class="in">
+                    <input type="password" name="password" placeholder="비밀번호" class="in">
+                    <input type="submit" id="sessionLoginButton" class="login-button" value="로그인">
+                </form>
+                <div class="message-container">
+                    <!-- <div id="sessionLoginMessage"></div> -->
+                    <button id="checkSessionButton">세션 검증</button>
+                </div>
+            </div>
+            <div class="login-container">
+                <h2 class="login-title">토큰 로그인</h2>
+                <form id="token" action="/token" method="post">
+                    <input type="text" name="username" placeholder="아이디" class="in">
+                    <input type="password" name="password" placeholder="비밀번호" class="in">
+                    <input type="submit" id="tokenLoginButton" class="login-button" value="로그인">
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="login-container">
-        <h2 class="login-title">토큰 로그인</h2>
-        <form id="token" action="/token" method="post">
-            <input type="text" name="username" placeholder="아이디" class="in">
-            <input type="password" name="password" placeholder="비밀번호" class="in">
-            <input type="submit" id="tokenLoginButton" class="login-button" value="로그인"><br>
-        </form>
-        <div id="tokenLoginMessage"></div>
+    <div class="container">
+        <div class="data-container">
+            <h2>세션 데이터</h2>
+            <table id="sessionDataTable">
+                <tr>
+                    <th>Session ID</th>
+                    <th>Data</th>
+                    <th>Expires</th>
+                </tr>
+            </table>
+        </div>
     </div>
+</body>
+
+</html>
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -131,10 +177,10 @@
             const form = event.target;
             const formData = new FormData(form);
 
-            axios.post('http://127.0.0.1:4000/session/login', {
+            axios.post('http://127.0.0.1:4000/session/login',{
                     username: formData.get('username'),
                     password: formData.get('password')
-                })
+                },{ withCredentials: true })
                 .then(function (response) {
                     console.log(response.data);
                     // 로그인 성공 처리
@@ -186,10 +232,7 @@
 
                 });
         });
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
       const checkSessionButton = document.getElementById('checkSessionButton');
       checkSessionButton.addEventListener('click', function() {
         axios.get('http://127.0.0.1:4000/session/check', { withCredentials: true })
@@ -206,6 +249,33 @@
             console.error(error);
           });
       });
+         // 세션 데이터 가져와서 테이블에 추가하기
+         axios.get('http://127.0.0.1:4000/session/data')
+            .then(function(response) {
+                const sessions = response.data;
+                const table = document.getElementById('sessionDataTable');
+
+                sessions.forEach(session => {
+                    const row = document.createElement('tr');
+
+                    const sessionIdCell = document.createElement('td');
+                    sessionIdCell.textContent = session.session_id;
+                    row.appendChild(sessionIdCell);
+
+                    const dataCell = document.createElement('td');
+                    dataCell.textContent = session.data;
+                    row.appendChild(dataCell);
+
+                    const expiresCell = document.createElement('td');
+                    expiresCell.textContent = session.expires;
+                    row.appendChild(expiresCell);
+
+                    table.appendChild(row);
+                });
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
     </script>
 </body>
 

@@ -11,3 +11,15 @@ export async function authenticateUser(username, password) {
     throw error;
   }
 }
+
+export async function getAllSessionData() {
+  try {
+    const query = 'SELECT * FROM sessions';
+    const db = await dbLoader();
+    const [rows] = await db.execute(query);
+    return rows;
+  } catch (error) {
+    console.error('Failed to get session data:', error);
+    throw error;
+  }
+}

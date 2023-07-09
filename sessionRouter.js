@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateUser } from './services.js';
+import { authenticateUser, getAllSessionData } from './services.js';
 const router = express.Router();
 
 // 로그인
@@ -16,18 +16,13 @@ router.post('/login', async (req, res) => {
     if (authenticated) {
       const now = new Date();
       const expires = new Date(now.getTime() + 86400000).toISOString().slice(0, 22).replace('T', ' ');
-
       req.session.data = {
         authenticateUser: true,
         user: { username },
         expires: expires,
       };
-      req.session.save((err) => {
-        if (err) {
-          console.error('세션 저장 오류:', err);
-        }
-      });
-      console.log('로그인했을 때: ', req.session);
+
+      res.cookie('sessionID', req.sessionID, { httpOnly: true });
       res.send('세션 로그인 성공');
     } else throw error;
   } catch (error) {
@@ -44,6 +39,7 @@ router.get('/logout', (req, res) => {
 
 // 세션 검증 API
 router.get('/check', (req, res) => {
+  console.log('세션검증시', req.cookies);
   try {
     if (req.sessionID) {
       // 세션이 존재하고 로그인된 상태일 때
@@ -51,6 +47,14 @@ router.get('/check', (req, res) => {
     }
   } catch (error) {
     res.send('검증 실패');
+    console.error(error);
+  }
+});
+router.get('/data', async (req, res) => {
+  try {
+    const sessionData = await getAllSessionData();
+    res.send(sessionData);
+  } catch (error) {
     console.error(error);
   }
 });
