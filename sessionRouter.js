@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateUser, getAllSessionData } from './services.js';
+import { authenticateUser, getAllSessionData, getMySessionData } from './services.js';
 const router = express.Router();
 
 // 로그인
@@ -44,14 +44,14 @@ router.get('/logout', (req, res) => {
 });
 
 // 세션 검증 API
-router.get('/check', (req, res) => {
+router.get('/check', async (req, res) => {
   console.log('세션검증시 쿠키:', req.cookies);
   console.log('3:', req.session);
-  const result = res.sessionID;
+  const loggedUsername = await getMySessionData();
   try {
     if (req.sessionID) {
       // 세션이 존재
-      res.send(req.sessionID);
+      res.send('세션이 유효합니다. 로그인상태입니다.');
     }
   } catch (error) {
     res.send('검증 실패');
