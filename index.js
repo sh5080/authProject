@@ -58,6 +58,11 @@ async function startServer() {
       password: DB_PASSWORD,
       database: DB_NAME,
     });
+
+    const now = new Date();
+    const koreanTime = 9 * 60 * 60 * 1000;
+    const koreanNow = new Date(now.getTime() + koreanTime);
+    const expires = new Date(koreanNow.getTime() + 24 * 60 * 60 * 1000);
     app.use(
       session({
         secret: key,
@@ -67,7 +72,7 @@ async function startServer() {
         cookie: {
           // 쿠키의 만료 시간을 설정합니다.
           // 예: 24시간 (밀리초 단위)
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          expires: expires,
 
           // 쿠키의 최대 수명을 설정합니다.
           // 예: 24시간 (초 단위)
@@ -76,14 +81,13 @@ async function startServer() {
         },
       })
     );
-
     // 미들웨어 및 라우터 설정
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(
       cors({
-        origin: 'http://127.0.0.1:5500',
+        origin: 'http://localhost:5500',
         methods: ['GET', 'POST', 'OPTIONS'],
         credentials: true,
       })
