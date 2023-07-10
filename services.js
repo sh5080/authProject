@@ -14,19 +14,11 @@ export async function authenticateUser(username, password) {
 
 export async function getAllSessionData() {
   try {
-    const query = 'SELECT data FROM sessions';
+    const query = 'SELECT * FROM sessions';
     const db = await dbLoader();
     const [rows] = await db.execute(query);
 
-    const sessionData = rows.map((row) => {
-      const { data } = row;
-      const parsedData = JSON.parse(data);
-      const username = parsedData.data.user.username;
-
-      return { ...parsedData, username };
-    });
-
-    return sessionData;
+    return rows;
   } catch (error) {
     console.error('Failed to get session data:', error);
     throw error;

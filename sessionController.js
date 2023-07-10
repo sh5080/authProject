@@ -8,7 +8,6 @@ export async function login(req, res) {
   try {
     // 사용자 인증 성공
     const authenticated = await authenticateUser(username, password);
-
     if (authenticated) {
       const now = new Date();
       const koreanTime = 9 * 60 * 60 * 1000;
@@ -17,17 +16,19 @@ export async function login(req, res) {
 
       req.session.data = {
         authenticateUser: true,
-        user: { username },
+        user: username,
         createdAt: koreanNow.toISOString().slice(0, 19).replace('T', ' '),
         expires: expires.toISOString().slice(0, 19).replace('T', ' '),
       };
       res.cookie('sessionID', req.sessionID, { expires: expires, httpOnly: true });
-      res.send('세션 로그인 성공');
-    } else {
-      throw new Error('세션 로그인 실패');
+      res.send(`${username} 님 환영합니다.`);
+    }
+    if (!authenticated) {
+      res.status(401).send('없는 id이거나 잘못된 비밀번호입니다.');
+      return;
     }
   } catch (error) {
-    res.status(401).send('세션 로그인 실패');
+    res.status(500).send('세션 로그인 실패');
     console.error('error message : ', error);
   }
 }
@@ -44,12 +45,15 @@ export function logout(req, res) {
 // 세션 검증 API
 export function checkSession(req, res) {
   console.log('세션검증시 쿠키:', req.cookies);
-  console.log('3:', req.session);
-
+  console.log('3:', req.sessionID);
+  //   console.log(req);
   try {
-    if (req.sessionID) {
+    if (req.sessionID === req.cookies.sessionID) {
       // 세션이 존재
       res.send('세션이 유효합니다. 로그인 상태입니다.');
+    }
+    if (!req.cookies.sessionID) {
+      res.status(401).send('세션이 존재하지 않습니다.');
     }
   } catch (error) {
     res.send('검증 실패');
