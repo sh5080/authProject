@@ -59,24 +59,15 @@ async function startServer() {
       database: DB_NAME,
     });
 
-    const now = new Date();
-    const koreanTime = 9 * 60 * 60 * 1000;
-    const koreanNow = new Date(now.getTime() + koreanTime);
-    const expires = new Date(koreanNow.getTime() + 24 * 60 * 60 * 1000);
     app.use(
       session({
+        name: 'sessionID',
         secret: key,
         resave: false,
         saveUninitialized: false,
         store: sessionStore,
         cookie: {
-          // 쿠키의 만료 시간을 설정합니다.
-          // 예: 24시간 (밀리초 단위)
-          expires: expires,
-
-          // 쿠키의 최대 수명을 설정합니다.
-          // 예: 24시간 (초 단위)
-          maxAge: 24 * 60 * 60,
+          //세션로그인이므로 만료시간 설정 x
           httpOnly: true,
         },
       })
