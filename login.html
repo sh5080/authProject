@@ -187,6 +187,34 @@ document.getElementById("session").addEventListener("submit", function (event) {
 
       const checkSessionButton = document.getElementById('checkSessionButton');
       createLogoutButton('session');
+      //sessionData 가져오기
+      axios.get('http://localhost:4000/session/data', { withCredentials: true })
+            .then(function(response) {
+                const sessions = response.data;
+                
+                const table = document.getElementById('sessionDataTable');
+
+                sessions.forEach(session => {
+                    const row = document.createElement('tr');
+
+                    const sessionIdCell = document.createElement('td');
+                    sessionIdCell.textContent = session.session_id;
+                    row.appendChild(sessionIdCell);
+
+                    const dataCell = document.createElement('td');
+                    dataCell.textContent = session.data;
+                    row.appendChild(dataCell);
+
+                    const expiresCell = document.createElement('td');
+                    expiresCell.textContent = session.expires;
+                    row.appendChild(expiresCell);
+
+                    table.appendChild(row);
+                });
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
     })
     .catch(function (error) {
       console.error(error);
