@@ -39,19 +39,19 @@ export function logout(req, res) {
 
 // 세션 검증 API
 export async function checkSession(req, res) {
-  console.log('세션검증시 쿠키:', req.session);
+  console.log('세션검증시 쿠키:', req.sessionID);
 
   try {
     const sessions = await getAllSessionData();
     console.log('세션: ', req.cookies.sessionID);
     if (!sessions[0] && req.cookies.sessionID === undefined) {
-      return res.send('조회할 세션이 없습니다.');
+      return res.status(400).send('조회할 세션이 없습니다.');
     }
     if (!sessions[0]) {
-      return res.send('서버에서 조회되는 세션이 없습니다.');
+      return res.status(404).send('서버에서 조회되는 세션이 없습니다.');
     }
     if (req.cookies.sessionID === undefined) {
-      return res.send('클라이언트에서 조회되는 세션이 없습니다.');
+      return res.status(404).send('클라이언트에서 조회되는 세션이 없습니다.');
     }
     const sessionID = req.cookies.sessionID.split('.')[0].slice(2);
 
