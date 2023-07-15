@@ -139,14 +139,6 @@
 
     <div class="container">
         <div class="data-container">
-            <!-- <h2>세션 데이터</h2>
-            <table id="sessionDataTable">
-                <tr>
-                    <th>Session ID</th>
-                    <th>Data</th>
-                    <th>Expires</th>
-                </tr>
-            </table> -->
         </div>
     </div>
 </body>
@@ -239,7 +231,8 @@
             container.appendChild(logoutButton);
         }
 
-        function handleLogout() {
+        logoutButton.addEventListener('click', function (event) {
+            event.preventDefault();
             axios
                 .get('http://localhost:4000/session/logout', { withCredentials: true })
                 .then(function (response) {
@@ -254,10 +247,7 @@
                     console.error(error);
                     // 로그아웃 실패 처리
                 });
-        }
-
-        // 로그아웃 버튼 클릭 시 handleLogout 함수 호출
-        logoutButton.addEventListener('click', handleLogout);
+        })
         container.appendChild(logoutButton);
     }
 
@@ -277,8 +267,6 @@
                 .then(function (response) {
                     console.log(response.data);
                     // 로그아웃 성공 처리
-                    // const loginButton = document.getElementById('sessionLoginButton');
-                    // loginButton.value = '로그인';
                     console.log('여기2')
                     window.location.href = '/login.html'; // 로그아웃 후 홈페이지로 리다이렉트
                 })
@@ -290,13 +278,11 @@
 
                 });
         }
-        const loginButton = document.getElementById('sessionLoginButton');
-        loginButton.removeEventListener('click', handleLogout); // 이전에 추가된 이벤트 리스너 제거
-        loginButton.addEventListener('click', handleLogout);
 
         axios.get('http://localhost:4000/session/check', { withCredentials: true })
             .then(function (response) {
                 const loggedIn = response.data;
+                console.log('1: ', loggedIn)
                 const loginButton = document.getElementById('sessionLoginButton');
                 if (loggedIn) {
                     // 세션 유지되고 있으므로 추가 작업 수행
@@ -304,11 +290,16 @@
                     // 로그인된 상태를 보여주는 추가 작업 수행
                     handleLoginSuccess(loggedIn);
                     loginButton.value = '로그아웃';
+
                     console.log('여기3')
+                    loginButton.removeEventListener('click', handleLogout);
+                    loginButton.addEventListener('click', handleLogout);
                 }
                 else {
                     // 세션 없음으로 로그아웃 상태 페이지 표시
                     loginButton.value = '로그인';
+                    loginButton.removeEventListener('click', handleLogout);
+                    console.log('여기4')
                 }
             })
             .catch(function (error) {
