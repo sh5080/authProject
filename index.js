@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import MySQLStore from 'express-mysql-session';
 import cookieParser from 'cookie-parser';
+import { initializeSession } from './authHandler.js';
 
 const app = express();
 // env
@@ -41,38 +42,10 @@ async function startServer() {
   try {
     await dbLoader();
 
+    // 미들웨어 및 라우터 설정
     // session 설정
     app.use(cookieParser());
-    const sessionStore = new MySQLStore({
-      createDatabaseTable: true,
-      schema: {
-        tableName: 'sessions',
-        columnNames: {
-          session_id: 'session_id',
-          data: 'data',
-          expires: 'expires',
-        },
-      },
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-    });
-
-    app.use(
-      session({
-        name: 'sessionID',
-        secret: key,
-        resave: false,
-        saveUninitialized: false,
-        store: sessionStore,
-        cookie: {
-          //세션로그인이므로 만료시간 설정 x
-          httpOnly: true,
-        },
-      })
-    );
-    // 미들웨어 및 라우터 설정
+    app.use(initializeSession);
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
@@ -83,8 +56,6 @@ async function startServer() {
         credentials: true,
       })
     );
-
-    // 라우터 연결
 
     app.use('/session', sessionRoutes);
     app.use('/token', tokenRoutes);
