@@ -1,13 +1,12 @@
 import express from 'express';
-import session from 'express-session';
 import cors from 'cors';
 import sessionRoutes from './sessionRouter.js';
 import tokenRoutes from './tokenRouter.js';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
-import MySQLStore from 'express-mysql-session';
 import cookieParser from 'cookie-parser';
 import { initializeSession } from './authHandler.js';
+import { errorHandler } from './errorHandler.js';
 
 const app = express();
 // env
@@ -57,9 +56,12 @@ async function startServer() {
       })
     );
 
+    app.set(db);
+
     app.use('/session', sessionRoutes);
     app.use('/token', tokenRoutes);
-    app.set(db);
+
+    app.use(errorHandler);
 
     // 서버 시작
     app.listen(port, () => {
