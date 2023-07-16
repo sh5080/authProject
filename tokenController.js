@@ -19,8 +19,8 @@ export async function login(req, res) {
     if (authenticated) {
       // 토큰 생성 및 반환
       const token = generateToken(username);
-      res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
-      res.send({ message: '토큰 로그인 성공', token });
+      res.cookie('tokenID', token, { httpOnly: true, maxAge: 3600000 });
+      res.send({ message: `${username} 님 환영합니다.`, token });
     } else {
       throw new Error('인증 실패');
     }
@@ -31,6 +31,6 @@ export async function login(req, res) {
 }
 
 export async function logout(req, res) {
-  res.clearCookie('token');
+  res.clearCookie('tokenID');
   res.send('토큰 로그아웃 성공');
 }
