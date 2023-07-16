@@ -26,7 +26,7 @@ export async function login(req, res) {
     }
   } catch (error) {
     res.status(500).send('세션 로그인 실패');
-    console.error('error message : ', error);
+    console.error(error);
   }
 }
 
@@ -39,11 +39,8 @@ export function logout(req, res) {
 
 // 세션 검증 API
 export async function checkSession(req, res) {
-  console.log('세션검증시 쿠키:', req.sessionID);
-
   try {
     const sessions = await getAllSessionData();
-    console.log('세션: ', req.cookies.sessionID);
     if (!sessions[0] && req.cookies.sessionID === undefined) {
       return res.status(400).send('조회할 세션이 없습니다.');
     }

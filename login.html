@@ -123,6 +123,9 @@
                     <input type="password" name="password" placeholder="비밀번호" class="in">
                     <input type="submit" id="tokenLoginButton" class="login-button" value="로그인">
                 </form>
+                <div class="message-container">
+                    <div id="tokenLoginMessage"></div>
+                </div>
             </div>
 
 
@@ -167,11 +170,7 @@
                 const loginButton = document.getElementById('sessionLoginButton');
                 loginButton.value = '로그아웃';
                 // 입력 칸들 숨김 처리
-
-                const usernameInput = document.querySelector('input[name="username"]');
-                const passwordInput = document.querySelector('input[name="password"]');
-                usernameInput.style.display = 'none';
-                passwordInput.style.display = 'none';
+                hideLoginForm('session')
 
                 const welcomeMessage = document.createElement('p');
                 welcomeMessage.textContent = `${response.data}`;
@@ -233,12 +232,14 @@
 
         logoutButton.addEventListener('click', function (event) {
             event.preventDefault();
+
+            // 동적 처리
             axios
-                .get('http://localhost:4000/session/logout', { withCredentials: true })
+                .get(`http://localhost:4000/${containerId}/logout`, { withCredentials: true })
                 .then(function (response) {
                     console.log(response.data);
                     // 로그아웃 성공 처리
-                    const loginButton = document.getElementById('sessionLoginButton');
+                    const loginButton = document.getElementById(`${containerId}LoginButton`);
                     loginButton.value = '로그인';
                     console.log('여기1')
                     window.location.href = '/login.html'; // 로그아웃 후 홈페이지로 리다이렉트
@@ -247,9 +248,10 @@
                     console.error(error);
                     // 로그아웃 실패 처리
                 });
-        })
+        });
         container.appendChild(logoutButton);
     }
+
 
     // 로그인 성공 처리 함수
     function handleLoginSuccess(data) {
@@ -286,7 +288,7 @@
                 const loginButton = document.getElementById('sessionLoginButton');
                 if (loggedIn) {
                     // 세션 유지되고 있으므로 추가 작업 수행
-                    hideLoginForm();
+                    hideLoginForm('session');
                     // 로그인된 상태를 보여주는 추가 작업 수행
                     handleLoginSuccess(loggedIn);
                     loginButton.value = '로그아웃';
@@ -309,47 +311,15 @@
     }
 
     // 입력칸 숨기기
-    function hideLoginForm() {
-        const usernameInput = document.querySelector('input[name="username"]');
-        const passwordInput = document.querySelector('input[name="password"]');
+    function hideLoginForm(containerId) {
+        const formContainer = document.getElementById(containerId);
+        const usernameInput = formContainer.querySelector('input[name="username"]');
+        const passwordInput = formContainer.querySelector('input[name="password"]');
         usernameInput.style.display = 'none';
         passwordInput.style.display = 'none';
     }
 
 
-
-
-    document.getElementById("token").addEventListener("submit", function (event) {
-        event.preventDefault(); // 폼 기본 동작 중단
-        const form = event.target;
-        const formData = new FormData(form);
-
-        axios.post('http://localhost:4000/token/login', {
-            username: formData.get('username'),
-            password: formData.get('password')
-        })
-            .then(function (response) {
-                console.log(response.data);
-                // 로그인 성공 처리
-                const loginMessage = document.getElementById('tokenLoginMessage');
-                loginMessage.textContent = response.data.message;
-
-                // 토큰 저장 및 활용
-                const token = response.data.token;
-
-                const loginButton = document.getElementById('tokenLoginButton');
-                loginButton.value = '로그아웃';
-
-                createLogoutButton('token');
-            })
-            .catch(function (error) {
-                console.error(error);
-                // 로그인 실패 처리
-                const loginMessage = document.getElementById('tokenLoginMessage');
-                loginMessage.textContent = error.response.data;
-
-            });
-    });
 
     const checkSessionButton = document.getElementById('checkSessionButton');
     checkSessionButton.addEventListener('click', function () {
@@ -397,6 +367,41 @@
         .catch(function (error) {
             console.error(error);
         });
+
+
+
+
+    document.getElementById("token").addEventListener("submit", function (event) {
+        event.preventDefault(); // 폼 기본 동작 중단
+        const form = event.target;
+        const formData = new FormData(form);
+
+        axios.post('http://localhost:4000/token/login', {
+            username: formData.get('username'),
+            password: formData.get('password')
+        }, { withCredentials: true })
+            .then(function (response) {
+                console.log('1: ', formData);
+                // 로그인 성공 처리
+                const loginMessage = document.getElementById('tokenLoginMessage');
+                loginMessage.textContent = response.data.message;
+
+                // 토큰 저장 및 활용
+                const token = response.data.token;
+                console.log('토큰: ', token)
+                const loginButton = document.getElementById('tokenLoginButton');
+                loginButton.value = '로그아웃';
+                hideLoginForm('token')
+                createLogoutButton('token');
+            })
+            .catch(function (error) {
+                console.error(error);
+                // 로그인 실패 처리
+                const loginMessage = document.getElementById('tokenLoginMessage');
+                loginMessage.textContent = error.response.data;
+
+            });
+    });
 </script>
 </body>
 
