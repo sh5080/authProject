@@ -153,9 +153,8 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const host = window.location.host;
-    const apiDomain = window.location.host === 'sh5080.github.io' ? 'https://sh5080.github.io' : 'http://localhost:4000';
+    const apiDomain = window.location.host === 'sh5080.github.io/authProject' ? 'https://sh5080.github.io/authProject' : 'http://localhost:4000';
     axios.defaults.baseURL = apiDomain;
-    console.log(apiDomain)
     document.getElementById("session").addEventListener("submit", function (event) {
         event.preventDefault();
         const form = event.target;
