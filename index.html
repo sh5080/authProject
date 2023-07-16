@@ -157,6 +157,12 @@
     const apiDomain = window.location.host === 'sh5080.github.io' ? 'https://sh5080.github.io/authProject' : 'http://localhost:4000';
     axios.defaults.baseURL = apiDomain;
 
+    document.addEventListener('DOMContentLoaded', function () {
+        // 첫 페이지 로딩 시 세션, 토큰 확인하여 로그인상태 유지
+        checkSession();
+        checkToken();
+    });
+
     document.getElementById("session").addEventListener("submit", function (event) {
         event.preventDefault();
         const form = event.target;
@@ -214,12 +220,6 @@
             });
     });
 
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // 첫 페이지 로딩 시 세션 상태 확인
-        checkSession();
-    });
-
     function createLogoutButton(containerId) {
         const container = document.getElementById(containerId);
         let logoutButton = container.querySelector(`#${containerId} .login-button`);
@@ -258,7 +258,6 @@
                 .get('/session/logout', { withCredentials: true })
                 .then(function (response) {
                     console.log(response.data);
-                    console.log('여기2')
                     window.location.href = '/index.html';
                 })
                 .catch(function (error) {
@@ -272,14 +271,12 @@
         axios.get('/session/check', { withCredentials: true })
             .then(function (response) {
                 const loggedIn = response.data;
-                console.log('1: ', response)
                 const loginButton = document.getElementById('sessionLoginButton');
                 if (loggedIn) {
                     hideLoginForm('session');
-                    handleLoginSuccess(parseLoginMessage(loggedIn));
+                    handleLoginSuccess(parsedUsername(loggedIn), parsedAction(loggedIn));
                     loginButton.value = '로그아웃';
 
-                    console.log('여기3')
                     loginButton.removeEventListener('click', handleLogout);
                     loginButton.addEventListener('click', handleLogout);
                 }
@@ -306,6 +303,42 @@
                 alert(error.response.data)
             });
     });
+    function checkToken() {
+        function handleLogout() {
+            axios
+                .get('/token/logout', { withCredentials: true })
+                .then(function (response) {
+                    window.location.href = '/index.html';
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    const errorMessage = error.response.data;
+                    console.log(errorMessage);
+
+                });
+        }
+
+        axios.get('/token/check', { withCredentials: true })
+            .then(function (response) {
+                const loggedIn = response.data;
+                console.log('1: ', response)
+                const loginButton = document.getElementById('tokenLoginButton');
+                if (loggedIn) {
+                    hideLoginForm('token');
+                    handleLoginSuccess(parsedUsername(loggedIn), parsedAction(loggedIn));
+                    loginButton.value = '로그아웃';
+                    loginButton.removeEventListener('click', handleLogout);
+                    loginButton.addEventListener('click', handleLogout);
+                }
+                else {
+                    loginButton.value = '로그인';
+                    loginButton.removeEventListener('click', handleLogout);
+                }
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    }
     checkTokenButton.addEventListener('click', function () {
         axios
             .get('/token/check', { withCredentials: true })
@@ -378,23 +411,29 @@
 
 
     // 로그인 성공 처리 함수
-    function handleLoginSuccess(data) {
-        const loginMessage = document.getElementById('sessionLoginMessage');
+    function handleLoginSuccess(data, action) {
+        const loginMessage = document.getElementById(`${action}LoginMessage`);
         loginMessage.textContent = '';
         loginMessage.textContent = data;
-        const loginButton = document.getElementById('sessionLoginButton');
+        const loginButton = document.getElementById(`${action}LoginButton`);
         loginButton.value = '로그아웃';
     }
     // 세션 유지시 메세지 함수
-    function parseLoginMessage(data) {
-        const startIndex = data.indexOf('세션이 유효합니다.') + '세션이 유효합니다.'.length;
+    function parsedUsername(data) {
         const endIndex = data.indexOf('으로 로그인된 상태입니다.');
-        if (startIndex !== -1 && endIndex !== -1) {
-            const username = data.slice(startIndex, endIndex).trim();
+        if (endIndex !== -1) {
+            const username = data.slice(11, endIndex).trim();
             return `${username} 님 환영합니다.`;
         } else {
             return null;
         }
+    }
+    function parsedAction(data) {
+        let action = data.slice(0, 2).trim()
+        if (action === '토큰') {
+            action = 'token'
+        } else action = 'session'
+        return action
     }
     // 입력칸 숨기기
     function hideLoginForm(containerId) {
