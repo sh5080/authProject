@@ -11,8 +11,6 @@ export function generateToken(username) {
 export async function login(req, res) {
   // 사용자 인증 로직 구현
   const { username, password } = req.body;
-  console.log(username);
-  console.log(password);
   try {
     // 사용자 인증 성공
     const authenticated = await authenticateUser(username, password);
@@ -21,8 +19,10 @@ export async function login(req, res) {
       const token = generateToken(username);
       res.cookie('tokenID', token, { httpOnly: true, maxAge: 3600000 });
       res.send({ message: `${username} 님 환영합니다.`, token });
-    } else {
-      throw new Error('인증 실패');
+    }
+    if (!authenticated) {
+      res.status(401).send('없는 id이거나 잘못된 비밀번호입니다.');
+      return;
     }
   } catch (error) {
     res.status(401).send('토큰 로그인 실패');
@@ -33,4 +33,8 @@ export async function login(req, res) {
 export async function logout(req, res) {
   res.clearCookie('tokenID');
   res.send('토큰 로그아웃 성공');
+}
+
+export async function checkToken(req, res) {
+  res.json(`토큰이 유효합니다. ${req.username} 으로 로그인된 상태입니다.`);
 }
