@@ -152,12 +152,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+    const host = window.location.host;
+    const apiDomain = window.location.host === 'sh5080.github.io' ? 'https://sh5080.github.io' : 'http://localhost:4000';
+    axios.defaults.baseURL = apiDomain;
+    console.log(apiDomain)
     document.getElementById("session").addEventListener("submit", function (event) {
         event.preventDefault();
         const form = event.target;
         const formData = new FormData(form);
 
-        axios.post('http://localhost:4000/session/login', {
+        axios.post('/session/login', {
             username: formData.get('username'),
             password: formData.get('password')
         }, { withCredentials: true })
@@ -178,7 +182,7 @@
                 const checkSessionButton = document.getElementById('checkSessionButton');
                 createLogoutButton('session');
                 //sessionData 가져오기
-                axios.get('http://localhost:4000/session/data', { withCredentials: true })
+                axios.get('/session/data', { withCredentials: true })
                     .then(function (response) {
                         const sessions = response.data;
 
@@ -235,7 +239,7 @@
 
             // 동적 처리
             axios
-                .get(`http://localhost:4000/${containerId}/logout`, { withCredentials: true })
+                .get(`/${containerId}/logout`, { withCredentials: true })
                 .then(function (response) {
                     console.log(response.data);
 
@@ -256,7 +260,7 @@
     function checkSession() {
         function handleLogout() {
             axios
-                .get('http://localhost:4000/session/logout', { withCredentials: true })
+                .get('/session/logout', { withCredentials: true })
                 .then(function (response) {
                     console.log(response.data);
                     console.log('여기2')
@@ -270,7 +274,7 @@
                 });
         }
 
-        axios.get('http://localhost:4000/session/check', { withCredentials: true })
+        axios.get('/session/check', { withCredentials: true })
             .then(function (response) {
                 const loggedIn = response.data;
                 console.log('1: ', response)
@@ -296,7 +300,7 @@
 
     const checkSessionButton = document.getElementById('checkSessionButton');
     checkSessionButton.addEventListener('click', function () {
-        axios.get('http://localhost:4000/session/check', { withCredentials: true })
+        axios.get('/session/check', { withCredentials: true })
             .then(function (response) {
                 const loggedIn = response;
                 console.log('logged', loggedIn)
@@ -314,7 +318,7 @@
     });
 
     // 세션 데이터 가져와서 테이블에 추가하기
-    axios.get('http://localhost:4000/session/data', { withCredentials: true })
+    axios.get('/session/data', { withCredentials: true })
         .then(function (response) {
             const sessions = response.data;
 
@@ -347,7 +351,7 @@
         const form = event.target;
         const formData = new FormData(form);
 
-        axios.post('http://localhost:4000/token/login', {
+        axios.post('/token/login', {
             username: formData.get('username'),
             password: formData.get('password')
         }, { withCredentials: true })
