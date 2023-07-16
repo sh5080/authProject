@@ -125,6 +125,7 @@
                 </form>
                 <div class="message-container">
                     <div id="tokenLoginMessage"></div>
+                    <button id="checkTokenButton">토큰 검증</button>
                 </div>
             </div>
 
@@ -155,6 +156,7 @@
     const host = window.location.host;
     const apiDomain = window.location.host === 'sh5080.github.io' ? 'https://sh5080.github.io/authProject' : 'http://localhost:4000';
     axios.defaults.baseURL = apiDomain;
+
     document.getElementById("session").addEventListener("submit", function (event) {
         event.preventDefault();
         const form = event.target;
@@ -165,21 +167,17 @@
             password: formData.get('password')
         }, { withCredentials: true })
             .then(function (response) {
-                console.log(response.data);
-
                 const loginMessage = document.getElementById('sessionLoginMessage');
-                loginMessage.textContent = '';
+                // loginMessage.textContent = '';
                 loginMessage.textContent = response.data;
                 const loginButton = document.getElementById('sessionLoginButton');
                 loginButton.value = '로그아웃';
 
                 hideLoginForm('session')
-
+                createLogoutButton('session');
                 const welcomeMessage = document.createElement('p');
                 welcomeMessage.textContent = `${response.data}`;
 
-                const checkSessionButton = document.getElementById('checkSessionButton');
-                createLogoutButton('session');
                 //sessionData 가져오기
                 axios.get('/session/data', { withCredentials: true })
                     .then(function (response) {
@@ -241,10 +239,8 @@
                 .get(`/${containerId}/logout`, { withCredentials: true })
                 .then(function (response) {
                     console.log(response.data);
-
                     const loginButton = document.getElementById(`${containerId}LoginButton`);
                     loginButton.value = '로그인';
-                    console.log('여기1')
                     window.location.href = '/index.html';
                 })
                 .catch(function (error) {
@@ -297,22 +293,31 @@
             });
     }
 
-    const checkSessionButton = document.getElementById('checkSessionButton');
     checkSessionButton.addEventListener('click', function () {
         axios.get('/session/check', { withCredentials: true })
             .then(function (response) {
                 const loggedIn = response;
-                console.log('logged', loggedIn)
                 if (loggedIn) {
                     alert(response.data);
-                }
-                else {
-                    alert('로그인이 필요합니다.');
                 }
             })
             .catch(function (error) {
                 console.error(error);
                 alert(error.response.data)
+            });
+    });
+    checkTokenButton.addEventListener('click', function () {
+        axios
+            .get('/token/check', { withCredentials: true })
+            .then(function (response) {
+                const loggedIn = response;
+                if (loggedIn) {
+                    alert(response.data);
+                }
+            })
+            .catch(function (error) {
+                console.error(error);
+                alert(error.response.data.message)
             });
     });
 
@@ -355,12 +360,9 @@
             password: formData.get('password')
         }, { withCredentials: true })
             .then(function (response) {
-                console.log('1: ', formData);
                 const loginMessage = document.getElementById('tokenLoginMessage');
                 loginMessage.textContent = response.data.message;
 
-                const token = response.data.token;
-                console.log('토큰: ', token)
                 const loginButton = document.getElementById('tokenLoginButton');
                 loginButton.value = '로그아웃';
                 hideLoginForm('token')

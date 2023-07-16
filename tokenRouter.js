@@ -1,5 +1,5 @@
 import express from 'express';
-import { login, logout } from './tokenController.js';
+import { checkToken, login, logout } from './tokenController.js';
 import { initializeToken } from './authHandler.js';
 
 const router = express.Router();
@@ -11,6 +11,6 @@ router.post('/login', login);
 router.get('/logout', logout);
 
 // 토큰 검증 API
-router.get('/check', initializeToken);
+router.get('/check', initializeToken, checkToken);
 
 export default router;
