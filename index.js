@@ -50,7 +50,7 @@ async function startServer() {
     app.use(express.urlencoded({ extended: true }));
     app.use(
       cors({
-        origin: 'http://localhost:5500',
+        origin: ['http://localhost:5500', 'https://sh5080.github.io'],
         methods: ['GET', 'POST', 'OPTIONS'],
         credentials: true,
       })
