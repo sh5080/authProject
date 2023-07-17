@@ -5,8 +5,8 @@ import tokenRoutes from './tokenRouter.js';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
-import { initializeSession } from './authHandler.js';
-import { errorHandler } from './errorHandler.js';
+import { initializeSession } from './middlewares/authHandler.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
 // env

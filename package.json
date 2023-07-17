@@ -2,7 +2,7 @@
   "name": "auth_project",
   "version": "1.0.0",
   "description": "session / token 인증방식 구현 프로젝트",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": "https://github.com/sh5080/authProject.git",
   "author": "sh5080",
   "license": "MIT",
@@ -18,8 +18,8 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "devDependencies": {
     "prettier": "^2.8.8"

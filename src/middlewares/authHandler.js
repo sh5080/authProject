@@ -32,7 +32,6 @@ export const initializeSession = session({
   cookie: {
     httpOnly: true,
   },
-  expires: new Date(Date.now() + 3600000),
 });
 
 export function initializeToken(req, res, next) {
