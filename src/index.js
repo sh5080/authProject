@@ -5,7 +5,7 @@ import tokenRoutes from './tokenRouter.js';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
-import { initializeSession } from './middlewares/authHandler.js';
+import { checkSessionExpiration, initializeSession } from './middlewares/authHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
@@ -45,7 +45,7 @@ async function startServer() {
     // session 설정
     app.use(cookieParser());
     app.use(initializeSession);
-
+    app.use(checkSessionExpiration);
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(
@@ -57,10 +57,8 @@ async function startServer() {
     );
 
     app.set(db);
-
     app.use('/session', sessionRoutes);
     app.use('/token', tokenRoutes);
-
     app.use(errorHandler);
 
     // 서버 시작
