@@ -55,6 +55,7 @@ export const checkSessionExpiration = (req, res, next) => {
         console.log('만료된 세션 삭제:', req.sessionID);
       }
     });
+    res.status(401).json({ message: '세션이 만료되었습니다.' });
   }
 
   next();
