@@ -50,7 +50,7 @@ export const checkSessionExpiration = (req, res, next) => {
     // 세션 데이터를 만료시킵니다.
     req.session.destroy();
     console.log('만료된 세션 삭제:', req.sessionID);
-    return res.status(401).json({ message: '세션이 만료되었습니다.' });
+    return res.status(401).json({ message: '세션이 만료되었습니다. 다시 로그인해주세요.' });
   } else {
     next();
   }
@@ -60,7 +60,7 @@ export function initializeToken(req, res, next) {
   const token = req.cookies.tokenID || '';
 
   if (!token) {
-    return res.status(400).json({ message: '조회할 토큰이 없습니다.' });
+    return res.status(404).json({ message: '조회할 토큰이 없습니다.' });
   }
 
   jwt.verify(token, key, (err, decoded) => {
