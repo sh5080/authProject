@@ -1,7 +1,8 @@
+import { AppError, CommonError } from './middlewares/errorHandler.js';
 import { authenticateUser, getAllSessionData } from './services.js';
 
 // 로그인
-export async function login(req, res) {
+export async function login(req, res, next) {
   // 사용자 인증 로직 구현
   const { username, password } = req.body;
 
@@ -21,12 +22,11 @@ export async function login(req, res) {
       res.send(`${username} 님 환영합니다.`);
     }
     if (!authenticated) {
-      res.status(401).send('없는 id이거나 잘못된 비밀번호입니다.');
-      return;
+      throw new AppError(CommonError.INVALID_INPUT, '없는 id이거나 잘못된 비밀번호입니다.', 401);
     }
   } catch (error) {
-    res.status(500).send('세션 로그인 실패');
     console.error(error);
+    next(error);
   }
 }
 
@@ -38,17 +38,17 @@ export function logout(req, res) {
 }
 
 // 세션 검증 API
-export async function checkSession(req, res) {
+export async function checkSession(req, res, next) {
   try {
     const sessions = await getAllSessionData();
     if (!sessions[0] && req.cookies.sessionID === undefined) {
-      return res.status(400).send('조회할 세션이 없습니다.');
+      throw new AppError(CommonError.RESOURCE_NOT_FOUND, '조회할 세션이 없습니다.', 400);
     }
     if (!sessions[0]) {
-      return res.status(404).send('서버에서 조회되는 세션이 없습니다.');
+      throw new AppError(CommonError.RESOURCE_NOT_FOUND, '서버에서 조회되는 세션이 없습니다.', 404);
     }
     if (req.cookies.sessionID === undefined) {
-      return res.status(404).send('클라이언트에서 조회되는 세션이 없습니다.');
+      throw new AppError(CommonError.RESOURCE_NOT_FOUND, '클라이언트에서 조회되는 세션이 없습니다.', 404);
     }
     const sessionID = req.cookies.sessionID.split('.')[0].slice(2);
 
@@ -61,8 +61,9 @@ export async function checkSession(req, res) {
       return res.status(401).send('세션 검증 실패');
     }
   } catch (error) {
-    res.status(500).send('검증 실패');
+    // res.status(500).send('검증 실패');
     console.error(error);
+    next(error);
   }
 }
 

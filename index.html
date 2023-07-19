@@ -174,7 +174,6 @@
         }, { withCredentials: true })
             .then(function (response) {
                 const loginMessage = document.getElementById('sessionLoginMessage');
-                // loginMessage.textContent = '';
                 loginMessage.textContent = response.data;
                 const loginButton = document.getElementById('sessionLoginButton');
                 loginButton.value = '로그아웃';
@@ -321,7 +320,6 @@
         axios.get('/token/check', { withCredentials: true })
             .then(function (response) {
                 const loggedIn = response.data;
-                console.log('1: ', response)
                 const loginButton = document.getElementById('tokenLoginButton');
                 if (loggedIn) {
                     hideLoginForm('token');

@@ -8,7 +8,7 @@ export function generateToken(username) {
   return token;
 }
 
-export async function login(req, res) {
+export async function login(req, res, next) {
   // 사용자 인증 로직 구현
   const { username, password } = req.body;
   try {
@@ -21,12 +21,11 @@ export async function login(req, res) {
       res.send({ message: `${username} 님 환영합니다.`, token });
     }
     if (!authenticated) {
-      res.status(401).send('없는 id이거나 잘못된 비밀번호입니다.');
-      return;
+      throw new AppError(CommonError.INVALID_INPUT, '없는 id이거나 잘못된 비밀번호입니다.', 401);
     }
   } catch (error) {
-    res.status(401).send('토큰 로그인 실패');
     console.error(error);
+    next(error);
   }
 }
 
