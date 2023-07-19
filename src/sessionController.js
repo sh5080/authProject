@@ -51,28 +51,46 @@ export async function checkSession(req, res, next) {
       throw new AppError(CommonError.RESOURCE_NOT_FOUND, '클라이언트에서 조회되는 세션이 없습니다.', 404);
     }
     const sessionID = req.cookies.sessionID.split('.')[0].slice(2);
-
     const matchedSession = sessions.find((session) => session.session_id === sessionID);
 
     if (matchedSession) {
       // 세션이 존재
       return res.send(`세션이 유효합니다. ${req.session.data.user} 으로 로그인된 상태입니다.`);
     } else {
-      return res.status(401).send('세션 검증 실패');
+      throw new AppError(CommonError.RESOURCE_NOT_FOUND, '유효하지 않은 세션입니다.', 400);
     }
   } catch (error) {
-    // res.status(500).send('검증 실패');
     console.error(error);
     next(error);
   }
 }
 
+export async function extendSession(req, res, next) {
+  if (req.session.data) {
+    // 세션이 존재하면 세션 만료 시간을 연장
+    req.session.touch();
+    return res.status(200).json({ message: '세션 연장 성공' });
+  } else {
+    return res.status(401).json({ message: '세션 만료되었습니다.' });
+  }
+}
+
 // 세션 데이터 조회
-export async function getSessionData(req, res) {
+export async function getSessionData(req, res, next) {
   try {
     const sessionData = await getAllSessionData();
+    if (!sessionData[0]) {
+      sessionData.push({
+        session_id: 'null',
+        data: 'null',
+        expires: 'null',
+      });
+    }
+
+    console.log(sessionData[0]);
     res.send(sessionData);
   } catch (error) {
     console.error(error);
+    next(error);
   }
 }
