@@ -42,12 +42,11 @@ async function startServer() {
     await dbLoader();
 
     // 미들웨어 및 라우터 설정
-    // session 설정
     app.use(cookieParser());
-    app.use(initializeSession);
-    app.use(checkSessionExpiration);
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+
+    //cors 설정
     app.use(
       cors({
         origin: ['http://localhost:5500', 'https://sh5080.github.io/authProject'],
@@ -55,7 +54,8 @@ async function startServer() {
         credentials: true,
       })
     );
-
+    app.use(initializeSession);
+    app.use(checkSessionExpiration);
     app.set(db);
     app.use('/session', sessionRoutes);
     app.use('/token', tokenRoutes);
