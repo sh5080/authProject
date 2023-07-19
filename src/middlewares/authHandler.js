@@ -42,23 +42,18 @@ export const checkSessionExpiration = (req, res, next) => {
   }
   // 세션 생성시간을 가져와 세션 만료 시간을 설정합니다.
   const sessionCreatedAt = new Date(Date.parse(req.session.data.createdAt));
-  const expireTime = 1 * 60 * 60 * 10; // 60*60*10 = 1분
+  const expireTime = 60 * 60 * 60 * 10; // 60*60*10 = 1분
   const sessionExpires = new Date(sessionCreatedAt.getTime() + expireTime);
 
   // 세션 만료 시간이 설정되어 있고, 현재 시간이 세션 만료 시간을 지났다면
   if (sessionExpires && new Date() > sessionExpires) {
     // 세션 데이터를 만료시킵니다.
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('세션 삭제 오류:', err);
-      } else {
-        console.log('만료된 세션 삭제:', req.sessionID);
-      }
-    });
-    res.status(401).json({ message: '세션이 만료되었습니다.' });
-  }
+    req.session.destroy();
 
-  next();
+    console.log('만료된 세션 삭제:', req.sessionID);
+  } else {
+    next();
+  }
 };
 
 export function initializeToken(req, res, next) {
