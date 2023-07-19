@@ -86,8 +86,6 @@ export async function getSessionData(req, res, next) {
         expires: 'null',
       });
     }
-
-    console.log(sessionData[0]);
     res.send(sessionData);
   } catch (error) {
     console.error(error);
