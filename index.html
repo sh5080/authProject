@@ -163,6 +163,7 @@
         checkToken();
     });
 
+
     document.getElementById("session").addEventListener("submit", function (event) {
         event.preventDefault();
         const form = event.target;
@@ -215,7 +216,7 @@
             .catch(function (error) {
                 console.error(error);
                 const loginMessage = document.getElementById('sessionLoginMessage');
-                loginMessage.textContent = error.response.data;
+                loginMessage.textContent = error.response.data.message;
             });
     });
 
@@ -267,6 +268,7 @@
                 });
         }
 
+
         axios.get('/session/check', { withCredentials: true })
             .then(function (response) {
                 const loggedIn = response.data;
@@ -299,7 +301,7 @@
             })
             .catch(function (error) {
                 console.error(error);
-                alert(error.response.data)
+                alert(error.response.data.message)
             });
     });
     function checkToken() {
@@ -402,7 +404,7 @@
             .catch(function (error) {
                 console.error(error);
                 const loginMessage = document.getElementById('tokenLoginMessage');
-                loginMessage.textContent = error.response.data;
+                loginMessage.textContent = error.response.data.message;
 
             });
     });
