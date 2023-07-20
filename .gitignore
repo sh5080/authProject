@@ -5,7 +5,7 @@
 /yarn-error.log
 /node_modules
 /yarn.lock
-
+/coverage
 # Created by https://www.toptal.com/developers/gitignore/api/macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos
 ### macOS ###
