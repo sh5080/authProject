@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { key } from './index.js';
-import { authenticateUser } from './services.js';
-import { AppError, CommonError } from './middlewares/errorHandler.js';
+import { key } from '../index.js';
+import { authenticateUser } from '../services/services.js';
+import { AppError, CommonError } from '../middlewares/errorHandler.js';
 
 export function generateToken(username) {
   // 토큰 생성

@@ -1,6 +1,6 @@
 import express from 'express';
-import { login, logout, checkSession, extendSession, getSessionData } from './sessionController.js';
-import { checkSessionExpiration } from './middlewares/authHandler.js';
+import { login, logout, checkSession, extendSession, getSessionData } from '../controllers/sessionController.js';
+import { checkSessionExpiration } from '../middlewares/authHandler.js';
 const router = express.Router();
 
 // 로그인

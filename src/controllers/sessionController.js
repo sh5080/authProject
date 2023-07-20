@@ -1,5 +1,5 @@
-import { AppError, CommonError } from './middlewares/errorHandler.js';
-import { authenticateUser, getAllSessionData } from './services.js';
+import { AppError, CommonError } from '../middlewares/errorHandler.js';
+import { authenticateUser, getAllSessionData } from '../services/services.js';
 
 // 로그인
 export async function login(req, res, next) {

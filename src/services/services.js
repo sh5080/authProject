@@ -1,4 +1,4 @@
-import { dbLoader } from './index.js';
+import { dbLoader } from '../index.js';
 
 export async function authenticateUser(username, password) {
   try {
