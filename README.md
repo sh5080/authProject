@@ -2,22 +2,23 @@
   <img alt="Logo" src="https://github.com/YourGitHubUsername/YourRepoName/assets/logo.png" width="800">
   
   <h1>세션, 로그인 비교 프로젝트</h1>
-  <img src="https://img.shields.io/badge/기획, 구현-8085CC?style=flat-square&logoColor=white"/>
+  <img src="https://img.shields.io/badge/2023.07.07~2023.07.14(기획, 구현)-8085CC?style=flat-square&logoColor=white"/>
   <br />
-  <img src="https://img.shields.io/badge/리팩토링-8085CC?style=flat-square&logoColor=white"/>
+  <img src="https://img.shields.io/badge/진행중(리팩토링)-8085CC?style=flat-square&logoColor=white"/>
   <br />
 
   <h2>프로젝트 소개</h2>
   <p>
-    이 프로젝트는 세션과 토큰을 활용하여 로그인 기능을 구현한 웹 어플리케이션입니다. Express.js를 기반으로 구현되었으며, 사용자의 로그인 상태를 세션과 토큰을 통해 관리합니다.
+    이 프로젝트는 세션과 토큰을 공부하기 위해 로그인 기능을 구현한 웹 어플리케이션입니다. Express.js를 기반으로 구현되었으며, 사용자의 로그인 상태를 세션과 토큰을 통해 관리합니다. 
   </p>
 </div>
 
 ## 기능 설명
 
-- 로그인/회원가입 기능
+- 세션 / 토큰 로그인 기능
 - 세션 기반 로그인 유지
 - 토큰 기반 로그인 유지
+- 테스트 코드를 통해 각 기능들의 정상 작동 확인
 
 
 ## 기술 스택
@@ -44,6 +45,7 @@ DB_HOST=your_database_host
 DB_USER=your_database_user
 DB_PASSWORD=your_database_password
 DB_NAME=your_database_name
+PORT=your_port_number
 ```
 
 3. 의존성 설치
@@ -56,7 +58,7 @@ yarn install
 yarn start
 ```
 
-##
+5. 테스트 코드
 ```
-웹 브라우저에서 
+yarn test
 ```
