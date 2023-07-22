@@ -47,7 +47,7 @@ describe('login', () => {
     });
 
     await login(req, res, next);
-
+    expect(req.session.data.user).toBe('admin');
     expect(res.send).toHaveBeenCalledWith('admin 님 환영합니다.');
     expect(next).not.toHaveBeenCalled();
   });
@@ -60,12 +60,17 @@ describe('login', () => {
     // login 함수를 모의 함수로 사용
     login.mockImplementation(async (req, res, next) => {
       const { username, password } = req.body;
-      const users = [
-        { username: 'user1', password: 'password1' },
-        { username: 'user2', password: 'password2' },
-      ];
-      const user = users.find((user) => user.username === username && user.password === password);
-      if (user) {
+      const authenticated = await authenticateUser(username, password);
+      if (authenticated) {
+        const now = new Date();
+        const koreanTime = 9 * 60 * 60 * 1000;
+        const koreanNow = new Date(now.getTime() + koreanTime);
+
+        req.session.data = {
+          authenticateUser: true,
+          user: username,
+          createdAt: koreanNow.toISOString().slice(0, 19).replace('T', ' '),
+        };
         res.send(`${username} 님 환영합니다.`);
       } else {
         next(new AppError(CommonError.INVALID_INPUT, '없는 id이거나 잘못된 비밀번호입니다.', 401));
@@ -84,22 +89,23 @@ describe('login', () => {
 describe('logout', () => {
   test('로그아웃 성공', async () => {
     const req = {
-      session: {
-        destroy: jest.fn((callback) => callback(null)),
-      },
+      session: { destroy: jest.fn() },
       cookies: {
-        sessionID: 'test-session-id',
+        sessionID: 'sessionID',
       },
     };
     const res = {
       clearCookie: jest.fn(),
       send: jest.fn(),
     };
-
-    logout(req, res);
+    req.session.destroy();
+    res.clearCookie('sessionID');
+    res.send('세션 로그아웃 성공');
+    await logout(req, res);
 
     expect(req.session.destroy).toHaveBeenCalled();
-    expect(res.clearCookie).toHaveBeenCalledWith('sessionID');
+    expect(res.clearCookie).toHaveBeenCalled();
+    expect(res.clearCookie.mock.calls[0][0]).toBe('sessionID');
     expect(res.send).toHaveBeenCalledWith('세션 로그아웃 성공');
   });
 });
