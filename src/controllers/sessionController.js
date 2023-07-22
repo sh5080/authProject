@@ -31,8 +31,8 @@ export async function login(req, res, next) {
 }
 
 // 로그아웃
-export function logout(req, res) {
-  req.session.destroy(); // 세션 제거
+export async function logout(req, res) {
+  await req.session.destroy(); // 세션 제거
   res.clearCookie('sessionID'); // 쿠키 제거
   res.send('세션 로그아웃 성공');
 }
