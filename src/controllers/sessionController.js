@@ -45,7 +45,11 @@ export async function checkSession(req, res, next) {
       throw new AppError(CommonError.RESOURCE_NOT_FOUND, '조회할 세션이 없습니다.', 400);
     }
     if (!sessions[0]) {
-      throw new AppError(CommonError.RESOURCE_NOT_FOUND, '서버에서 조회되는 세션이 없습니다.', 404);
+      throw new AppError(
+        CommonError.RESOURCE_NOT_FOUND,
+        '서버에서 조회되는 세션이 없습니다. 유효하지 않은 쿠키입니다.',
+        404
+      );
     }
     if (req.cookies.sessionID === undefined) {
       throw new AppError(CommonError.RESOURCE_NOT_FOUND, '클라이언트에서 조회되는 세션이 없습니다.', 404);
@@ -66,12 +70,20 @@ export async function checkSession(req, res, next) {
 }
 
 export async function extendSession(req, res, next) {
-  if (req.session.data) {
-    // 세션이 존재하면 세션 만료 시간을 연장
-    req.session.touch();
-    return res.status(200).json({ message: '세션 연장 성공' });
-  } else {
-    return res.status(401).json({ message: '세션 만료되었습니다.' });
+  try {
+    if (req.session.data) {
+      // 세션이 존재하면 세션 만료 시간을 연장
+      const now = new Date();
+      const koreanTime = 9 * 60 * 60 * 1000;
+      const koreanNow = new Date(now.getTime() + koreanTime);
+      req.session.data.createdAt = koreanNow.toISOString().slice(0, 19).replace('T', ' ');
+      return res.status(200).json('세션 연장 성공');
+    } else {
+      throw new AppError(CommonError.RESOURCE_NOT_FOUND, '연장할 세션이 없습니다.', 400);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
   }
 }
 
