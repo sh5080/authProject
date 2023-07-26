@@ -13,7 +13,7 @@ router.get('/logout', logout);
 router.get('/check', checkSessionExpiration, checkSession);
 
 //세션 연장
-router.post('/extend', extendSession);
+router.get('/extend', extendSession);
 
 // 세션 데이터 조회
 router.get('/data', getSessionData);
