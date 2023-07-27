@@ -24,3 +24,15 @@ export async function getAllSessionData() {
     throw error;
   }
 }
+
+export async function getRequestsFromDB(sessionID) {
+  try {
+    const db = await dbLoader();
+    const query = 'SELECT * FROM requests WHERE `key` = ?';
+    const [rows] = await db.execute(query, [sessionID]);
+    return rows;
+  } catch (error) {
+    console.error('Failed to get requests from DB:', error);
+    throw error;
+  }
+}

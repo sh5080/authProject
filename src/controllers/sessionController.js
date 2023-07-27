@@ -19,7 +19,9 @@ export async function login(req, res, next) {
         user: username,
         createdAt: koreanNow.toISOString().slice(0, 19).replace('T', ' '),
       };
-      res.send(`${username} 님 환영합니다.`);
+      // res.send(`${username} 님 환영합니다.`);
+      res.locals.responseData = `${username} 님 환영합니다.`;
+      next();
     }
     if (!authenticated) {
       throw new AppError(CommonError.INVALID_INPUT, '없는 id이거나 잘못된 비밀번호입니다.', 401);
