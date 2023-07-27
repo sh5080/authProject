@@ -7,7 +7,7 @@ import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
 import { checkSessionExpiration, initializeSession } from './middlewares/authHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
-import { checkIdempotency } from './middlewares/checkIdempotency.js';
+import { checkIdempotency, saveRequestToDB } from './middlewares/checkIdempotency.js';
 
 const app = express();
 // env
@@ -51,16 +51,18 @@ async function startServer() {
     app.use(
       cors({
         origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://sh5080.github.io/authProject'],
-        methods: ['GET', 'POST', 'OPTIONS'],
+        methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH'],
         credentials: true,
       })
     );
-    app.use(checkIdempotency);
     app.use(initializeSession);
+    app.use(saveRequestToDB);
     app.use(checkSessionExpiration);
+
     app.set(db);
     app.use('/session', sessionRoutes);
     app.use('/token', tokenRoutes);
+    app.use(checkIdempotency);
     app.use(errorHandler);
 
     // 서버 시작
