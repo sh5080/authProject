@@ -7,7 +7,7 @@ import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
 import { checkSessionExpiration, initializeSession } from './middlewares/authHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
-import { checkIdempotency, saveRequestToDB } from './middlewares/checkIdempotency.js';
+import { saveRequestToDB, checkIdempotency } from './middlewares/checkIdempotency.js';
 
 const app = express();
 // env
