@@ -1,14 +1,21 @@
 import { AppError, CommonError } from '../middlewares/errorHandler.js';
 import { authenticateUser, getAllSessionData } from '../services/services.js';
-
+import bcrypt from 'bcrypt';
 // 로그인
-export async function login(req, res, next) {
+export const login = async (req, res, next) => {
   // 사용자 인증 로직 구현
   const { username, password } = req.body;
-
   try {
     // 사용자 인증 성공
-    const authenticated = await authenticateUser(username, password);
+    const authenticated = await authenticateUser(username);
+    if (!authenticated) {
+      throw new AppError(CommonError.INVALID_INPUT, '없는 id이거나 잘못된 비밀번호입니다.', 401);
+    }
+    const isPasswordMatch = await bcrypt.compare(password, authenticated.password);
+    if (!isPasswordMatch) {
+      throw new AppError(CommonError.AUTHENTICATION_ERROR, '없는 id이거나 잘못된 비밀번호입니다.', 401);
+    }
+
     if (authenticated) {
       const now = new Date();
       const koreanTime = 9 * 60 * 60 * 1000;
@@ -23,24 +30,21 @@ export async function login(req, res, next) {
       res.locals.responseData = `${username} 님 환영합니다.`;
       next();
     }
-    if (!authenticated) {
-      throw new AppError(CommonError.INVALID_INPUT, '없는 id이거나 잘못된 비밀번호입니다.', 401);
-    }
   } catch (error) {
     console.error(error);
     next(error);
   }
-}
+};
 
 // 로그아웃
-export async function logout(req, res) {
+export const logout = async (req, res) => {
   await req.session.destroy(); // 세션 제거
   res.clearCookie('sessionID'); // 쿠키 제거
   res.send('세션 로그아웃 성공');
-}
+};
 
 // 세션 검증 API
-export async function checkSession(req, res, next) {
+export const checkSession = async (req, res, next) => {
   try {
     const sessions = await getAllSessionData();
     if (!sessions[0] && req.cookies.sessionID === undefined) {
@@ -69,9 +73,9 @@ export async function checkSession(req, res, next) {
     console.error(error);
     next(error);
   }
-}
+};
 
-export async function extendSession(req, res, next) {
+export const extendSession = async (req, res, next) => {
   try {
     if (req.session.data) {
       // 세션이 존재하면 세션 만료 시간을 연장
@@ -87,10 +91,10 @@ export async function extendSession(req, res, next) {
     console.error(error);
     next(error);
   }
-}
+};
 
 // 세션 데이터 조회
-export async function getSessionData(req, res, next) {
+export const getSessionData = async (req, res, next) => {
   try {
     const sessionData = await getAllSessionData();
     if (!sessionData[0]) {
@@ -105,4 +109,4 @@ export async function getSessionData(req, res, next) {
     console.error(error);
     next(error);
   }
-}
+};
