@@ -1,5 +1,6 @@
 import { signupUser } from '../services/services.js';
 import { AppError, CommonError } from '../middlewares/errorHandler.js';
+import bcrypt from 'bcrypt';
 
 export const signup = async (req, res, next) => {
   const { name, username, password, email } = req.body;
@@ -18,8 +19,8 @@ export const signup = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userData = { name, username, hashedPassword, email };
     await signupUser(userData);
-
-    // res.locals.responseData = `${username} 님 환영합니다.`;
+    res.locals.responseData = `${username} 님 환영합니다.`;
+    next();
   } catch (error) {
     console.error(error);
     next(error);
