@@ -2,7 +2,7 @@ import { AppError, CommonError } from './errorHandler.js';
 import { dbLoader } from '../index.js';
 import { getRequestsFromDB } from '../services/services.js';
 
-export async function saveRequestToDB(req, res, next) {
+export const saveRequestToDB = async (req, res, next) => {
   try {
     const db = await dbLoader();
     const key = req.sessionID;
@@ -32,10 +32,10 @@ export async function saveRequestToDB(req, res, next) {
     console.error(error);
     next(error);
   }
-}
+};
 
 // 라우터 후에 DB에 저장한 req와 현재 req를 비교하는 미들웨어
-export async function checkIdempotency(req, res, next) {
+export const checkIdempotency = async (req, res, next) => {
   const sessionID = req.sessionID;
 
   try {
@@ -90,4 +90,4 @@ export async function checkIdempotency(req, res, next) {
     console.error('Failed to check idempotency:', error);
     next(error);
   }
-}
+};

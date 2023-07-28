@@ -3,13 +3,13 @@ import { key } from '../index.js';
 import { authenticateUser } from '../services/services.js';
 import { AppError, CommonError } from '../middlewares/errorHandler.js';
 import bcrypt from 'bcrypt';
-export function generateToken(username) {
+export const generateToken = (username) => {
   // 토큰 생성
   const token = jwt.sign({ username }, key, { expiresIn: '1h' });
   return token;
-}
+};
 
-export async function login(req, res, next) {
+export const login = async (req, res, next) => {
   // 사용자 인증 로직 구현
   const { username, password } = req.body;
   try {
@@ -34,15 +34,15 @@ export async function login(req, res, next) {
     console.error(error);
     next(error);
   }
-}
+};
 
-export async function logout(req, res) {
+export const logout = async (req, res) => {
   res.clearCookie('tokenID');
   res.send('토큰 로그아웃 성공');
-}
+};
 
-export async function checkToken(req, res, next) {
+export const checkToken = async (req, res, next) => {
   // res.json(`토큰이 유효합니다. ${req.username} 으로 로그인된 상태입니다.`);
   res.locals.responseData = `토큰이 유효합니다. ${req.username} 으로 로그인된 상태입니다.`;
   next();
-}
+};

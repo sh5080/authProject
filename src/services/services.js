@@ -11,7 +11,7 @@ export const signupUser = async (userData) => {
   }
 };
 
-export async function authenticateUser(username) {
+export const authenticateUser = async (username) => {
   try {
     const query = `SELECT * FROM users WHERE username = ?`;
     const db = await dbLoader();
@@ -21,9 +21,9 @@ export async function authenticateUser(username) {
     console.error('Failed to authenticate user:', error);
     throw error;
   }
-}
+};
 
-export async function getAllSessionData() {
+export const getAllSessionData = async () => {
   try {
     const query = 'SELECT * FROM sessions';
     const db = await dbLoader();
@@ -34,9 +34,9 @@ export async function getAllSessionData() {
     console.error('Failed to get session data:', error);
     throw error;
   }
-}
+};
 
-export async function getRequestsFromDB(sessionID) {
+export const getRequestsFromDB = async (sessionID) => {
   try {
     const db = await dbLoader();
     const query = 'SELECT * FROM requests WHERE `key` = ?';
@@ -46,4 +46,4 @@ export async function getRequestsFromDB(sessionID) {
     console.error('Failed to get requests from DB:', error);
     throw error;
   }
-}
+};

@@ -56,7 +56,7 @@ export const checkSessionExpiration = (req, res, next) => {
   }
 };
 
-export function initializeToken(req, res, next) {
+export const initializeToken = (req, res, next) => {
   const token = req.cookies.tokenID || '';
 
   if (!token) {
@@ -72,4 +72,4 @@ export function initializeToken(req, res, next) {
     req.username = decoded.username;
     next();
   });
-}
+};
