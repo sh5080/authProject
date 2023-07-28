@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import sessionRoutes from './routes/sessionRouter.js';
 import tokenRoutes from './routes/tokenRouter.js';
+import authRoutes from './routes/authRouter.js';
 import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
@@ -60,6 +61,7 @@ async function startServer() {
     app.use(checkSessionExpiration);
 
     app.set(db);
+    app.use('/auth', authRoutes);
     app.use('/session', sessionRoutes);
     app.use('/token', tokenRoutes);
     app.use(checkIdempotency);

@@ -1,5 +1,16 @@
 import { dbLoader } from '../index.js';
 
+export const signupUser = async (userData) => {
+  try {
+    const query = `INSERT INTO users (name, username, password, email)`;
+    const db = await dbLoader();
+    await db.execute(query, [userData.name, userData.username, userData.password, userData.email]);
+  } catch (error) {
+    console.error('Failed to signup user:', error);
+    throw error;
+  }
+};
+
 export async function authenticateUser(username, password) {
   try {
     const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
