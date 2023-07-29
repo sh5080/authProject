@@ -1,4 +1,4 @@
-import { dbLoader } from '../index.js';
+import { dbLoader } from '../dbLoader.js';
 
 export const signupUser = async (userData) => {
   try {

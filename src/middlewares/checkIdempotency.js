@@ -1,5 +1,4 @@
-import { AppError, CommonError } from './errorHandler.js';
-import { dbLoader } from '../index.js';
+import { dbLoader } from '../dbLoader.js';
 import { getRequestsFromDB } from '../services/services.js';
 
 export const saveRequestToDB = async (req, res, next) => {

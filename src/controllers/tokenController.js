@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { key } from '../index.js';
+import { key } from '../../index.js';
 import { authenticateUser } from '../services/services.js';
 import { AppError, CommonError } from '../middlewares/errorHandler.js';
 import bcrypt from 'bcrypt';
