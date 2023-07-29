@@ -15,9 +15,7 @@ const app = express();
 dotenv.config();
 const port = process.env.PORT || 3000;
 export const key = process.env.KEY;
-// app.get('/', (req, res) => {
-//   res.send('hi');
-// });
+
 async function startServer() {
   try {
     await dbLoader();
