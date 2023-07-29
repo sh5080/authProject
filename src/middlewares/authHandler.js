@@ -42,7 +42,7 @@ export const checkSessionExpiration = (req, res, next) => {
   }
   // 세션 생성시간을 가져와 세션 만료 시간을 설정합니다.
   const sessionCreatedAt = new Date(Date.parse(req.session.data.createdAt));
-  const expireTime = 0.2 * 60 * 60 * 10; // 60*60*10 = 1분
+  const expireTime = 1 * 60 * 60 * 10; // 60*60*10 = 1분
   const sessionExpires = new Date(sessionCreatedAt.getTime() + expireTime);
 
   // 세션 만료 시간이 설정되어 있고, 현재 시간이 세션 만료 시간을 지났다면

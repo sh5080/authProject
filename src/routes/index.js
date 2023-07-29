@@ -8,5 +8,5 @@ const router = express.Router();
 router.use('/auth', authRoutes);
 router.use('/session', sessionRoutes);
 router.use('/token', tokenRoutes);
-// router.use('/popup', popupRoutes);
+router.use('/popup', popupRoutes);
 export default router;

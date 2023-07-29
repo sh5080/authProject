@@ -65,6 +65,10 @@
             color: white;
         }
 
+        .login-button:hover {
+            background-color: rgb(29, 152, 128);
+        }
+
         .login-container a {
             text-decoration: none;
             color: #9B9B9B;
@@ -179,7 +183,35 @@
                 loginMessage.textContent = response.data;
                 const loginButton = document.getElementById('sessionLoginButton');
                 loginButton.value = '로그아웃';
+                axios.get('/popup/send')
+                    .then(response => {
+                        // 받아온 팝업 데이터를 페이지에 추가하여 팝업 보여주기
+                        const popupContainer = document.createElement('div');
+                        popupContainer.innerHTML = response.data;
+                        document.body.appendChild(popupContainer);
 
+                        const popupCloseButton = document.getElementById("popupCloseButton");
+                        popupCloseButton.addEventListener("click", () => {
+                            // 체크박스가 체크되어 있을 경우 쿠키 설정
+                            const reappearCheckbox = document.getElementById("reappearCheckbox");
+                            if (reappearCheckbox.checked) {
+                                const expirationDate = new Date();
+                                expirationDate.setDate(expirationDate.getDate() + 3);
+                                document.cookie = `reappear=true; expires=${expirationDate.toUTCString()}`;
+                            }
+                            popupContainer.style.display = "none";
+                        });
+
+                        // 페이지 로드 시 쿠키 확인하여 팝업 창 띄우기
+                        const reappearCookie = document.cookie.split(";").find((cookie) => cookie.trim().startsWith("reappear="));
+                        if (!reappearCookie || reappearCookie.trim() !== "reappear=true") {
+                            popupContainer.style.display = "block";
+                        }
+
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch popup:', error);
+                    });
                 hideLoginForm('session')
                 createLogoutButton('session');
                 const welcomeMessage = document.createElement('p');

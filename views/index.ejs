@@ -1,0 +1,21 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>3일 뒤에 다시보기 팝업</title>
+    <link rel="stylesheet" href="../public/popup.html">
+</head>
+
+<body>
+    <h1>환영합니다!</h1>
+    <p>이것은 3일 뒤에 다시보기 팝업입니다.</p>
+
+    <% if (showPopup) { %>
+        <div class="popup">
+            <p>3일 뒤에 다시보기 팝업입니다. 여기에 내용을 작성합니다.</p>
+        </div>
+        <% } %>
+</body>
+
+</html>
