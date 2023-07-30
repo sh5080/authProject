@@ -1,6 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { AppError, CommonError } from '../middlewares/errorHandler.js';
+
 export const sendPopup = (req, res, next) => {
   try {
     const reappearCookie = req.cookies.reappear;
@@ -13,14 +15,13 @@ export const sendPopup = (req, res, next) => {
       fs.readFile(popupFilePath, 'utf8', (err, data) => {
         if (err) {
           console.error('Failed to read popup.html:', err);
-          res.status(500).send('Failed to read popup.html');
+          throw new AppError(CommonError.UNEXPECTED_ERROR, 'popup.html을 불러오는데 실패했습니다.', 500);
         } else {
           res.send(data);
         }
       });
     } else {
-      // 쿠키가 있으면 팝업을 보여주지 않음
-      res.send('No popup');
+      next();
     }
   } catch (error) {
     console.error(error);
